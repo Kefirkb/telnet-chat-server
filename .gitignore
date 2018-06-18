@@ -1,0 +1,6 @@
+# Excludes
+
+**/.idea
+**/out
+**/.gradle
+**/lib
