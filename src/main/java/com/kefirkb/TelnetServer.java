@@ -1,24 +1,29 @@
 package com.kefirkb;
 
 import io.netty.bootstrap.ServerBootstrap;
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelInitializer;
-import io.netty.channel.ChannelOption;
-import io.netty.channel.ChannelPipeline;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
+import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import io.netty.handler.logging.LogLevel;
 import io.netty.handler.logging.LoggingHandler;
 import io.netty.handler.ssl.SslContext;
 import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
-import io.netty.channel.socket.SocketChannel;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.io.BufferedReader;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 public class TelnetServer {
 	static final boolean SSL = System.getProperty("ssl") != null;
 	static final int PORT = Integer.parseInt(System.getProperty("port", "23"));
+
+	private Channel serverChannel;
 
 	private final ChannelInitializer<SocketChannel> channelInitializer;
 
@@ -48,6 +53,7 @@ public class TelnetServer {
 
 			// Start the server.
 			ChannelFuture f = b.bind(PORT).sync();
+			serverChannel = f.channel();
 
 			// Wait until the server socket is closed.
 			f.channel().closeFuture().sync();
@@ -56,5 +62,9 @@ public class TelnetServer {
 			bossGroup.shutdownGracefully();
 			workerGroup.shutdownGracefully();
 		}
+	}
+
+	public void stop() {
+		serverChannel.close();
 	}
 }
