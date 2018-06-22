@@ -9,7 +9,6 @@ import io.netty.handler.codec.Delimiters;
 import io.netty.handler.codec.string.StringDecoder;
 import io.netty.handler.codec.string.StringEncoder;
 import io.netty.handler.ssl.SslContext;
-import org.springframework.beans.factory.annotation.Autowired;
 
 public class TelnetServerInitializer extends ChannelInitializer<SocketChannel> {
 	private static final StringDecoder DECODER = new StringDecoder();
@@ -18,7 +17,6 @@ public class TelnetServerInitializer extends ChannelInitializer<SocketChannel> {
 	private final ChannelInboundHandlerAdapter channelInboundHandlerAdapter;
 	private final SslContext sslCtx;
 
-	@Autowired
 	public TelnetServerInitializer(ChannelInboundHandlerAdapter channelInboundHandlerAdapter, SslContext sslCtx) {
 		this.channelInboundHandlerAdapter = channelInboundHandlerAdapter;
 		this.sslCtx = sslCtx;

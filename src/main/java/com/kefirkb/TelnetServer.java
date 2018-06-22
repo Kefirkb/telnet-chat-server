@@ -15,10 +15,6 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-
 public class TelnetServer {
 	static final boolean SSL = System.getProperty("ssl") != null;
 	static final int PORT = Integer.parseInt(System.getProperty("port", "23"));
