@@ -1,5 +1,6 @@
 package com.kefirkb.services;
 
+import com.kefirkb.TelnetServerHandler;
 import com.kefirkb.processors.CommandProcessor;
 import io.netty.channel.Channel;
 
@@ -11,34 +12,38 @@ import java.util.stream.Collectors;
 
 public class CommandsDispatcher {
 	private final Map<String, CommandProcessor> processorsByName;
+	private final MessageService messageService;
 
-	public CommandsDispatcher(Set<CommandProcessor> processors) {
+	public CommandsDispatcher(Set<CommandProcessor> processors, MessageService messageService) {
 		this.processorsByName = processors.stream().collect(Collectors.toMap(CommandProcessor::getName, Function.identity()));
+		this.messageService = messageService;
 	}
 
-	public String dispatch(String commandStr, Channel channel) {
+	public void dispatch(String commandStr, Channel channel) {
 		String[] commandNameWithParams = commandStr.split("[ ]+");
-		// Generate and write a response.
 
 		if (commandStr.isEmpty()) {
-			return "Try to enter something";
-			// TODO should send message error to personal queue
-
+			sendFromServer("Try to enter something", channel);
 		}
 		String commandName = commandNameWithParams[0];
 
 		CommandProcessor commandProcessor = processorsByName.get(commandName);
 
-		if(commandProcessor == null) {
-			return "Unknown command!";
+		if (commandProcessor == null) {
+			sendFromServer("Unknown command!", channel);
+			return;
 		}
 
 		try {
-			return commandProcessor.process(Arrays.copyOfRange(commandNameWithParams,1, commandNameWithParams.length), channel);
+			String result = commandProcessor.process(Arrays.copyOfRange(commandNameWithParams, 1, commandNameWithParams.length), channel);
+			sendFromServer(result, channel);
 		} catch (Exception e) {
-			// TODO send personal message with error
 			e.printStackTrace();
-			return e.getMessage();
+			sendFromServer("Internal error", channel);
 		}
+	}
+
+	private void sendFromServer(String messageText, Channel channel) {
+		messageService.sendMessage(TelnetServerHandler.SERVER_NAME, messageText, channel);
 	}
 }

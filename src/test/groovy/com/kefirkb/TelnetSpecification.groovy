@@ -45,28 +45,28 @@ class TelnetSpecification extends Specification {
 		telnetClient.getOutputStream().flush()
 
 		then:
-		reader.readLine() == "Invalid password or username"
+		reader.readLine() == "DUMMY_SERVER: Invalid password or username"
 
 		when:
 		telnetClient.getOutputStream().write(("logon dummy dummy dummy " + System.lineSeparator()).getBytes())
 		telnetClient.getOutputStream().flush()
 
 		then:
-		reader.readLine() == "You have bad parameters."
+		reader.readLine() == "DUMMY_SERVER: You have bad parameters."
 
 		when:
 		telnetClient.getOutputStream().write(("logon user1 user1" + System.lineSeparator()).getBytes())
 		telnetClient.getOutputStream().flush()
 
 		then:
-		reader.readLine() == "Logged successfully!"
+		reader.readLine() == "DUMMY_SERVER: Logged successfully!"
 
 		when:
 		telnetClient.getOutputStream().write(("logon user2 user2" + System.lineSeparator()).getBytes())
 		telnetClient.getOutputStream().flush()
 
 		then:
-		reader.readLine() == "You are already logged."
+		reader.readLine() == "DUMMY_SERVER: You are already logged."
 
 	}
 

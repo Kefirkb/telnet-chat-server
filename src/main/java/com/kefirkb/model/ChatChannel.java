@@ -13,9 +13,14 @@ public class ChatChannel {
 	private static final int MAX_USERS_COUNT = 10;
 	private static final int MAX_LAST_MESSAGES = 10;
 
+	private final String chatChannelName;
 	private User owner;
-
 	private List<User> joinedUsers = new CopyOnWriteArrayList<>();
+
+	public ChatChannel(@Nonnull String chatChannelName) {
+		this.chatChannelName = chatChannelName;
+	}
+
 	// Updated every time when new broadcast message to channel
 	private Queue<BroadCastMessage> lastMessages = new ArrayDeque<>(MAX_LAST_MESSAGES);
 
@@ -42,5 +47,10 @@ public class ChatChannel {
 	@Nonnull
 	public synchronized List<BroadCastMessage> getLastMessages() {
 		return new ArrayList<>(lastMessages);
+	}
+
+	@Nonnull
+	public String getChatChannelName() {
+		return chatChannelName;
 	}
 }

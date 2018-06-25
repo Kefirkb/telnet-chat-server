@@ -1,18 +1,18 @@
 import com.kefirkb.TelnetServer
 import com.kefirkb.TelnetServerHandler
 import com.kefirkb.TelnetServerInitializer
+import com.kefirkb.processors.CommandProcessor
 import com.kefirkb.processors.impl.LogonProcessor
-import com.kefirkb.services.CommandsDispatcher
+import com.kefirkb.services.MessageServiceImpl
 import com.kefirkb.services.impl.DummyAuthService
 
 beans {
+	importBeans("classpath:groovy/delivering_context.groovy")
+	importBeans("classpath:groovy/commands_context.groovy")
+
 	authService(DummyAuthService) {}
 
-	logonCommandProcessor(LogonProcessor, ref('authService'))
-
-	commandProcessors(HashSet, Arrays.asList(ref('logonCommandProcessor')))
-
-	commandsDispatcher(CommandsDispatcher, ref('commandProcessors'))
+	messageService(MessageServiceImpl) {}
 
 	telnetServerHandler(TelnetServerHandler, ref('authService'), ref('commandsDispatcher'))
 
