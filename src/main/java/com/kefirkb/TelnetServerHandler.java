@@ -1,6 +1,7 @@
 package com.kefirkb;
 
 import com.kefirkb.services.AuthService;
+import com.kefirkb.services.CommandsDispatcher;
 import io.netty.channel.ChannelFuture;
 import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.ChannelHandler.Sharable;
@@ -11,12 +12,14 @@ import io.netty.channel.SimpleChannelInboundHandler;
 public class TelnetServerHandler extends SimpleChannelInboundHandler<String> {
 
 	private final AuthService authService;
+	private final CommandsDispatcher commandsDispatcher;
 	// TODO should move to env
 	private static final String SERVER_NAME = "DUMMY_SERVER";
 
-	public TelnetServerHandler(AuthService authService) {
+	public TelnetServerHandler(AuthService authService, CommandsDispatcher commandsDispatcher) {
 		super();
 		this.authService = authService;
+		this.commandsDispatcher = commandsDispatcher;
 	}
 
 	@Override
@@ -47,27 +50,8 @@ public class TelnetServerHandler extends SimpleChannelInboundHandler<String> {
 
 		String commandName = commandNameWithParams[0];
 		// TODO Should refactor to requests processors
-		switch (commandName) {
-			case "login":
-				if (authService.isLogged(ctx.channel().id())) {
-					response = "You are already logged.";
-					break;
-				}
-				if (commandNameWithParams.length != 3) {
-					response = "You have bad parameters.";
-					break;
-				}
-				boolean logged = authService.tryLogon(commandNameWithParams[1], commandNameWithParams[2], ctx.channel());
-
-				if (logged) {
-					response = "Logged successfully!";
-					break;
-				}
-				response = "Invalid password or username";
-				break;
-			default:
-				break;
-		}
+		// TODO response should send to queue for personal messages
+		response = commandsDispatcher.dispatch(request, ctx.channel());
 
 		// We do not need to write a ChannelBuffer here.
 		// We know the encoder inserted at TelnetPipelineFactory will do the conversion.
