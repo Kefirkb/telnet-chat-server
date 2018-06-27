@@ -1,8 +1,6 @@
-import com.kefirkb.TelnetServer
+import com.kefirkb.TelnetServerInstance
 import com.kefirkb.TelnetServerHandler
 import com.kefirkb.TelnetServerInitializer
-import com.kefirkb.processors.CommandProcessor
-import com.kefirkb.processors.impl.LogonProcessor
 import com.kefirkb.services.MessageServiceImpl
 import com.kefirkb.services.impl.DummyAuthService
 
@@ -18,5 +16,5 @@ beans {
 
 	telnetServerInitializer(TelnetServerInitializer, ref('telnetServerHandler'), null)
 
-	telnetServer(TelnetServer, ref('telnetServerInitializer'))
+	telnetServer(TelnetServerInstance, ref('telnetServerInitializer'))
 }

@@ -15,7 +15,7 @@ import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.util.SelfSignedCertificate;
 import org.springframework.beans.factory.annotation.Autowired;
 
-public class TelnetServer {
+public class TelnetServerInstance {
 	static final boolean SSL = System.getProperty("ssl") != null;
 	static final int PORT = Integer.parseInt(System.getProperty("port", "23"));
 
@@ -23,7 +23,7 @@ public class TelnetServer {
 
 	private final ChannelInitializer<SocketChannel> channelInitializer;
 
-	public TelnetServer(@Autowired ChannelInitializer<SocketChannel> channelInitializer) {
+	public TelnetServerInstance(@Autowired ChannelInitializer<SocketChannel> channelInitializer) {
 		this.channelInitializer = channelInitializer;
 	}
 
