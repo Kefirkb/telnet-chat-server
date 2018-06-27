@@ -18,8 +18,19 @@ public interface UserService {
 	 * @param channelId netty channel id
 	 *
 	 * @return found user of null if not exists
+	 *
 	 * @implNote must be thread-safe
 	 */
 	@Nullable
 	User userByChannelId(@Nonnull ChannelId channelId);
+
+	/**
+	 * Method saves user. If exists then should update user. If not exists then should create user
+	 *
+	 * @param user user to save
+	 *
+	 * @return saved user
+	 */
+	@Nullable
+	User saveUser(User user);
 }

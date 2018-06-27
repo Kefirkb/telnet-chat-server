@@ -10,14 +10,14 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 
 @Sharable
-public class TelnetServerHandler extends SimpleChannelInboundHandler<String> {
+public class TelnetRequestHandler extends SimpleChannelInboundHandler<String> {
 
 	private final AuthService authService;
 	private final CommandsDispatcher commandsDispatcher;
 	// TODO should move to env
 	public static final String SERVER_NAME = "DUMMY_SERVER";
 
-	public TelnetServerHandler(AuthService authService, CommandsDispatcher commandsDispatcher) {
+	public TelnetRequestHandler(AuthService authService, CommandsDispatcher commandsDispatcher) {
 		super();
 		this.authService = authService;
 		this.commandsDispatcher = commandsDispatcher;

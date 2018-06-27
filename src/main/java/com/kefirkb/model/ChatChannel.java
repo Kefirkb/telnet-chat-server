@@ -15,10 +15,12 @@ public class ChatChannel {
 
 	private final String chatChannelName;
 	private User owner;
+
 	private List<User> joinedUsers = new CopyOnWriteArrayList<>();
 
-	public ChatChannel(@Nonnull String chatChannelName) {
+	public ChatChannel(@Nonnull String chatChannelName, @Nonnull User owner) {
 		this.chatChannelName = chatChannelName;
+		this.owner = owner;
 	}
 
 	// Updated every time when new broadcast message to channel
@@ -26,6 +28,10 @@ public class ChatChannel {
 
 	public void joinUser(@Nonnull User user) {
 		joinedUsers.add(user);
+	}
+
+	public void leftUser(@Nonnull User user) {
+		joinedUsers.remove(user);
 	}
 
 	@Nonnull

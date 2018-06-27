@@ -45,7 +45,7 @@ public class DummyAuthService implements AuthService {
 		boolean logged = password.equals(PERSIST_USERS_REGISTRY.get(userName));
 
 		if (logged) {
-			DummyUserRepository.LOGGED_USERS.put(channelId.asLongText(), new User(channel));
+			DummyUserRepository.LOGGED_USERS.put(channelId.asLongText(), new User(channel, userName));
 			LOGGED_CHANNELS.add(channelId.asLongText());
 			return true;
 		}

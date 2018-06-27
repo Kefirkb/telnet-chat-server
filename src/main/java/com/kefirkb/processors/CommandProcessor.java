@@ -9,8 +9,6 @@ import javax.annotation.Nonnull;
  */
 public interface CommandProcessor {
 
-	// TODO Command dispatcher should delegate sending response to specific queue sender
-
 	/**
 	 * Processes incoming command
 	 *
@@ -31,4 +29,10 @@ public interface CommandProcessor {
 	 */
 	@Nonnull
 	String getName();
+
+	/**
+	 * Marks that for execution command user should be authorized
+	 * @return
+	 */
+	boolean isEnsuredAuthorize();
 }

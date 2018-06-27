@@ -1,6 +1,7 @@
 package com.kefirkb.services;
 
 import com.kefirkb.model.ChatChannel;
+import com.kefirkb.model.User;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -33,10 +34,10 @@ public interface ChatChannelService {
 	 *
 	 * @param chatChannel channel to create
 	 *
-	 * @return created channel
+	 * @return previous channel if exists or null if not
 	 *
 	 * @implNote must be thread-safe
 	 */
-	@Nonnull
-	ChatChannel createAndAddChannel(@Nonnull ChatChannel chatChannel);
+	@Nullable
+	ChatChannel saveChatChannel(@Nonnull ChatChannel chatChannel);
 }

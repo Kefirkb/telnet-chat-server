@@ -6,7 +6,7 @@ import spock.lang.Specification
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Executors
 
-class TelnetSpecification extends Specification {
+class LogonSpecification extends Specification {
 
 	def setup() {
 
@@ -34,35 +34,32 @@ class TelnetSpecification extends Specification {
 		telnetClient.connect("localhost",23)
 		BufferedReader reader = new BufferedReader(new InputStreamReader(telnetClient.inputStream))
 
-		when:
-		//do nothing
-		int nohting = 0
-		then:
+		expect:
 		reader.readLine() == "Welcome to DUMMY_SERVER!"
 
 		when:
-		telnetClient.getOutputStream().write(("logon dummy dummy" + System.lineSeparator()).getBytes())
+		telnetClient.getOutputStream().write(("/logon dummy dummy" + System.lineSeparator()).getBytes())
 		telnetClient.getOutputStream().flush()
 
 		then:
 		reader.readLine() == "DUMMY_SERVER: Invalid password or username"
 
 		when:
-		telnetClient.getOutputStream().write(("logon dummy dummy dummy " + System.lineSeparator()).getBytes())
+		telnetClient.getOutputStream().write(("/logon dummy dummy dummy " + System.lineSeparator()).getBytes())
 		telnetClient.getOutputStream().flush()
 
 		then:
 		reader.readLine() == "DUMMY_SERVER: You have bad parameters."
 
 		when:
-		telnetClient.getOutputStream().write(("logon user1 user1" + System.lineSeparator()).getBytes())
+		telnetClient.getOutputStream().write(("/logon user1 user1" + System.lineSeparator()).getBytes())
 		telnetClient.getOutputStream().flush()
 
 		then:
 		reader.readLine() == "DUMMY_SERVER: Logged successfully!"
 
 		when:
-		telnetClient.getOutputStream().write(("logon user2 user2" + System.lineSeparator()).getBytes())
+		telnetClient.getOutputStream().write(("/logon user2 user2" + System.lineSeparator()).getBytes())
 		telnetClient.getOutputStream().flush()
 
 		then:

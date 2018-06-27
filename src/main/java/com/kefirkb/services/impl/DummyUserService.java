@@ -17,4 +17,10 @@ public class DummyUserService implements UserService {
 	public User userByChannelId(@Nonnull ChannelId channelId) {
 		return DummyUserRepository.LOGGED_USERS.get(channelId.asLongText());
 	}
+
+	@Nullable
+	@Override
+	public User saveUser(@Nonnull User user) {
+		return DummyUserRepository.LOGGED_USERS.put(user.getChannel().id().asLongText(), user);
+	}
 }

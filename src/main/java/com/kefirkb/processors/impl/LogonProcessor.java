@@ -8,6 +8,7 @@ import javax.annotation.Nonnull;
 
 public class LogonProcessor implements CommandProcessor {
 	private final AuthService authService;
+	private final String commandName = "/logon";
 
 	public LogonProcessor(AuthService authService) {
 		this.authService = authService;
@@ -34,6 +35,11 @@ public class LogonProcessor implements CommandProcessor {
 	@Nonnull
 	@Override
 	public String getName() {
-		return "logon";
+		return commandName;
+	}
+
+	@Override
+	public boolean isEnsuredAuthorize() {
+		return false;
 	}
 }
