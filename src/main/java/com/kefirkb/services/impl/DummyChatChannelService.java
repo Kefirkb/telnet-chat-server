@@ -12,7 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
 public class DummyChatChannelService implements ChatChannelService {
-	private static final Map<String, ChatChannel > chatChannels = new ConcurrentHashMap<>();
+	private static final Map<String, ChatChannel> chatChannels = new ConcurrentHashMap<>();
 
 	@Nullable
 	@Override

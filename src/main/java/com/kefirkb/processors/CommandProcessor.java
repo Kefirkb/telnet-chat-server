@@ -11,6 +11,8 @@ public interface CommandProcessor {
 
 	/**
 	 * Processes incoming command
+	 * You should validate isEnsuredAuthorize before execution externally
+	 * @see CommandProcessor#isEnsuredAuthorize()
 	 *
 	 * @param args    arguments for command
 	 * @param channel netty channel source of incoming command
@@ -32,7 +34,7 @@ public interface CommandProcessor {
 
 	/**
 	 * Marks that for execution command user should be authorized
-	 * @return
+	 * @return true if user it need to authorize before execution this command
 	 */
 	boolean isEnsuredAuthorize();
 }

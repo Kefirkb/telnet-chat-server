@@ -17,7 +17,7 @@ import java.util.Set;
  */
 public class DummyAuthService implements AuthService {
 
-	private static final Map<String, String> PERSIST_USERS_REGISTRY =
+	private static final Map<String, String> PERSISTED_USERS_REGISTRY =
 			new HashMap<String, String>() {{
 				put("user0", "user0");
 				put("user1", "user1");
@@ -42,7 +42,7 @@ public class DummyAuthService implements AuthService {
 			throw new Exception("You already logged!");
 		}
 
-		boolean logged = password.equals(PERSIST_USERS_REGISTRY.get(userName));
+		boolean logged = password.equals(PERSISTED_USERS_REGISTRY.get(userName));
 
 		if (logged) {
 			DummyUserRepository.LOGGED_USERS.put(channelId.asLongText(), new User(channel, userName));
