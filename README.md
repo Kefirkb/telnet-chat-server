@@ -18,8 +18,13 @@ Java 8
 
 ### Build and run
 
-After build, see ./build/distributions/simple-telnet-server-0.1.zip or tar
-You can run this standalone
+After build, see
+```
+./build/distributions/simple-telnet-server-0.1.zip
+```
+You can run this standalone.
+
+Currently default port is 23. Try to connect to server with Putty or another telnet client.
 
 Build:
 ```
