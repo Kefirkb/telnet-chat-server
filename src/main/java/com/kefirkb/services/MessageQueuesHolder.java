@@ -30,8 +30,8 @@ public final class MessageQueuesHolder {
 		MESSAGE_QUEUE_BY_CHAT_CHANNEL_NAME.putIfAbsent(chatChannelName, new LinkedBlockingQueue<>());
 	}
 
-	public static PersonalMessage getNextPersonalMessage() throws InterruptedException {
-		return QUEUE_FOR_PERSONAL_MESSAGES.take();
+	public static PersonalMessage getNextPersonalMessage(long timeOut, TimeUnit timeUnit) throws InterruptedException {
+		return QUEUE_FOR_PERSONAL_MESSAGES.poll(timeOut, timeUnit);
 	}
 
 	public static BroadCastMessage getNextChatChannelMessage(String chatChannelName, long timeOut, TimeUnit timeUnit) throws InterruptedException {
@@ -40,5 +40,10 @@ public final class MessageQueuesHolder {
 
 	public static Set<String> availableChatChannels() {
 		return MESSAGE_QUEUE_BY_CHAT_CHANNEL_NAME.keySet();
+	}
+
+	public static void clearQueues() {
+		QUEUE_FOR_PERSONAL_MESSAGES.clear();
+		MESSAGE_QUEUE_BY_CHAT_CHANNEL_NAME.clear();
 	}
 }

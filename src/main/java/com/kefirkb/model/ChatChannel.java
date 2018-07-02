@@ -2,13 +2,12 @@ package com.kefirkb.model;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
-import java.util.ArrayDeque;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Queue;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
+/**
+ * Basic chat channel
+ */
 public class ChatChannel {
 	private static final int MAX_USERS_COUNT = 10;
 	private static final int MAX_LAST_MESSAGES = 10;
@@ -18,22 +17,23 @@ public class ChatChannel {
 
 	private List<User> joinedUsers = new CopyOnWriteArrayList<>();
 
-	public ChatChannel(@Nonnull String chatChannelName, @Nonnull User owner) {
-		this.chatChannelName = chatChannelName;
-		this.owner = owner;
-	}
-
 	// Updated every time when new broadcast message to channel
 	private Queue<BroadCastMessage> lastMessages = new ArrayDeque<>(MAX_LAST_MESSAGES);
+
+	public ChatChannel(@Nonnull String chatChannelName, @Nonnull User owner) {
+		this.chatChannelName = Objects.requireNonNull(chatChannelName, "chatChannelName");
+		this.owner = Objects.requireNonNull(owner, "owner");
+	}
 
 	public void joinUser(@Nonnull User user) {
 		joinedUsers.add(user);
 	}
 
-	public void leftUser(@Nonnull User user) {
+	public void leaveUser(@Nonnull User user) {
 		joinedUsers.remove(user);
 	}
 
+	@Nonnull
 	public User getOwner() {
 		return owner;
 	}

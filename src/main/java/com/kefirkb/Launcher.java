@@ -1,5 +1,6 @@
 package com.kefirkb;
 
+import com.kefirkb.services.MessageQueuesHolder;
 import com.kefirkb.services.senders.BroadCastMessageSender;
 import com.kefirkb.services.senders.PersonalMessageSender;
 import org.springframework.context.ApplicationContext;
@@ -27,6 +28,7 @@ public class Launcher {
 	public static void stop() {
 		personalMessageSender.stop();
 		broadCastMessageSender.stop();
+		MessageQueuesHolder.clearQueues();
 		telnetServer.stop();
 	}
 }

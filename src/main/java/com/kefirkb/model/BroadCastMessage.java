@@ -1,11 +1,16 @@
 package com.kefirkb.model;
 
 import javax.annotation.Nonnull;
+import javax.annotation.concurrent.Immutable;
 
+/**
+ * Message for broadcast delivering to all participants of chat channel
+ */
+@Immutable
 public class BroadCastMessage implements Message {
-	String messageText;
-	String senderName;
-	ChatChannel channelAddress;
+	private final String messageText;
+	private final String senderName;
+	private final ChatChannel channelAddress;
 
 	public BroadCastMessage(String senderName, String messageText, ChatChannel channelAddress) {
 		this.messageText = messageText;

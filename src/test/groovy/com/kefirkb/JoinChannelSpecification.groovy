@@ -9,23 +9,16 @@ import java.util.concurrent.Executors
 class JoinChannelSpecification extends Specification {
 
 	def setup() {
-
-	}
-
-	def cleanup() {
-
-	}
-
-	def setupSpec() {
 		ExecutorService executorService = Executors.newSingleThreadExecutor()
 		executorService.execute({
 			Launcher.main(new String[0])
 		})
-		Thread.sleep(5000)
+		Thread.sleep(4000)
 	}
 
-	def cleanupSpec() {
+	def cleanup() {
 		Launcher.stop()
+		Thread.sleep(2000)
 	}
 
 	def "Test join to channel "() {
@@ -49,36 +42,29 @@ class JoinChannelSpecification extends Specification {
 
 		when:
 		sendMessage(telnetClient1, "/join channelSome")
-		telnetClient1.getOutputStream().flush()
 
 		then:
 		reader1.readLine() == "DUMMY_SERVER: You should be authorized!"
 
 		when:
-		telnetClient1.getOutputStream().write(("/logon user1 user1" + System.lineSeparator()).getBytes())
-		telnetClient1.getOutputStream().flush()
+        sendMessage(telnetClient1, "/logon user1 user1")
 		reader1.readLine()// == "DUMMY_SERVER: Logged successfully!"
-		telnetClient1.getOutputStream().write(("/join channelSome" + System.lineSeparator()).getBytes())
-		telnetClient1.getOutputStream().flush()
+        sendMessage(telnetClient1, "/join channelSome" )
 
 		then:
 		reader1.readLine() == "DUMMY_SERVER: Channel was created: channelSome"
 		reader1.readLine() == "user1: joined to channelSome"
 
 		when:
-		telnetClient1.getOutputStream().write(("/join channelSome" + System.lineSeparator()).getBytes())
-		telnetClient1.getOutputStream().flush()
+        sendMessage(telnetClient1, "/join channelSome")
 
 		then:
 		reader1.readLine() == "DUMMY_SERVER: user1 is already in channelSome"
 
-
 		when:
-		telnetClient2.getOutputStream().write(("/logon user2 user2" + System.lineSeparator()).getBytes())
-		telnetClient2.getOutputStream().flush()
+        sendMessage(telnetClient2, "/logon user2 user2")
 		reader2.readLine()// == "DUMMY_SERVER: Logged successfully!"
-		telnetClient2.getOutputStream().write(("/join channelSome" + System.lineSeparator()).getBytes())
-		telnetClient2.getOutputStream().flush()
+        sendMessage(telnetClient2, "/join channelSome" )
 
 		then:
 		reader2.readLine() == "user2: joined to channelSome"
@@ -100,34 +86,10 @@ class JoinChannelSpecification extends Specification {
 		then:
 		reader2.readLine() == "user1: left channelSome"
 		reader3.readLine() == "user1: left channelSome"
-		//reader1.readLine() == "user1: joined to newChannel"
-
-//		when:
-//		telnetClient2.getOutputStream().write(("/left" + System.lineSeparator()).getBytes())
-//		telnetClient2.getOutputStream().flush()
-//
-//		then:
-//		reader2.readLine() == "DUMMY_SERVER: You have left channelSome"
-//
-//		when:
-//		telnetClient2.getOutputStream().write(("/left" + System.lineSeparator()).getBytes())
-//		telnetClient2.getOutputStream().flush()
-//
-//		then:
-//		reader2.readLine() == "DUMMY_SERVER: You are not in any channel!"
-
-//		when:
-//		telnetClient2.getOutputStream().write(("/join channelSome" + System.lineSeparator()).getBytes())
-//		telnetClient2.getOutputStream().flush()
-//
-//		then:
-//		reader2.readLine() == "DUMMY_SERVER: You joined to channelSome"
-//		//reader2.readLine() == "user2: joined to channelSome"
-//		//reader1.readLine() == "user2: joined to channelSome"
 
 	}
 
-	public static void sendMessage(TelnetClient client, String message) {
+	static void sendMessage(TelnetClient client, String message) {
 		client.getOutputStream().write((message + System.lineSeparator()).getBytes())
 		client.getOutputStream().flush()
 	}
