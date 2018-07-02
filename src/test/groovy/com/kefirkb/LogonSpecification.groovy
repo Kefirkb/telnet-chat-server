@@ -9,23 +9,16 @@ import java.util.concurrent.Executors
 class LogonSpecification extends Specification {
 
 	def setup() {
-
-	}
-
-	def cleanup() {
-
-	}
-
-	def setupSpec() {
 		ExecutorService executorService = Executors.newSingleThreadExecutor()
 		executorService.execute({
 			Launcher.main(new String[0])
 		})
-		Thread.sleep(5000)
+		Thread.sleep(4000)
 	}
 
-	def cleanupSpec() {
+	def cleanup() {
 		Launcher.stop()
+		Thread.sleep(2000)
 	}
 
 	def "Test login simple client"() {

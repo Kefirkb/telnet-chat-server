@@ -37,19 +37,11 @@ public class TelnetRequestHandler extends SimpleChannelInboundHandler<String> {
 
 	@Override
 	public void channelRead0(ChannelHandlerContext ctx, String request) throws Exception {
-
-		commandsDispatcher.dispatch(request, ctx.channel());
-
-		// We do not need to write a ChannelBuffer here.
-		// We know the encoder inserted at TelnetPipelineFactory will do the conversion.
-//		response += "\r\n";
-//		ChannelFuture future = ctx.channel().write(response);
-
-		// Close the connection after sending 'Have a good day!'
-		// if the client has sent 'bye'.
-//		if (close) {
-//			future.addListener(ChannelFutureListener.CLOSE);
-//		}
+        if("exit".equals(request)) {
+            ctx.close().addListener(ChannelFutureListener.CLOSE);
+        } else {
+            commandsDispatcher.dispatch(request, ctx.channel());
+        }
 	}
 
 	@Override

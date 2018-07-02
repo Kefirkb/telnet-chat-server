@@ -6,6 +6,9 @@ import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
 import java.util.Objects;
 
+/**
+ * Simple user entity
+ */
 public class User {
 	private ChatChannel joinedChatChannel;
 	private final Channel channel;

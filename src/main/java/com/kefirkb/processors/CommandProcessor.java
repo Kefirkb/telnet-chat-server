@@ -5,7 +5,7 @@ import io.netty.channel.Channel;
 import javax.annotation.Nonnull;
 
 /**
- * Simple request processor interface
+ * Simple commands processor interface
  */
 public interface CommandProcessor {
 

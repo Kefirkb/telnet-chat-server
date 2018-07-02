@@ -19,7 +19,7 @@ public interface MessageService {
 	 * @implNote must be thread-safe
 	 * @see com.kefirkb.model.BroadCastMessage
 	 */
-	void sendMessage(@Nonnull String messageText, @Nonnull ChatChannel chatChannel);
+	void sendMessage(@Nonnull String senderName, @Nonnull String messageText, @Nonnull ChatChannel chatChannel);
 
 	/**
 	 * Method sends message to concrete user

@@ -6,11 +6,8 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 
 import javax.annotation.Nonnull;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Simple stub service for auth
@@ -31,7 +28,7 @@ public class DummyAuthService implements AuthService {
 				put("user9", "user9");
 				put("user10", "user10");
 			}};
-	private static final Set<String> LOGGED_CHANNELS = new HashSet<>();
+	private static final Set<String> LOGGED_CHANNELS = ConcurrentHashMap.newKeySet();
 
 	@Override
 	public boolean tryLogon(@Nonnull String userName, @Nonnull String password, @Nonnull Channel channel) throws Exception {

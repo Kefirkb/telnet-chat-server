@@ -2,6 +2,7 @@ package com.kefirkb.services.impl;
 
 import com.kefirkb.model.ChatChannel;
 import com.kefirkb.services.ChatChannelService;
+import com.kefirkb.services.MessageQueuesHolder;
 
 import javax.annotation.Nonnull;
 import javax.annotation.Nullable;
@@ -29,6 +30,7 @@ public class DummyChatChannelService implements ChatChannelService {
 	@Nullable
 	@Override
 	public ChatChannel saveChatChannel(@Nonnull ChatChannel chatChannel) {
+		MessageQueuesHolder.createChatChannelQueue(chatChannel.getChatChannelName());
 		return chatChannels.put(chatChannel.getChatChannelName(), chatChannel);
 	}
 }
