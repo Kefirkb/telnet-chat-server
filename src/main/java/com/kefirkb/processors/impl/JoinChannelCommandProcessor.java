@@ -4,6 +4,7 @@ import com.kefirkb.model.ChatChannel;
 import com.kefirkb.model.User;
 import com.kefirkb.processors.CommandProcessor;
 import com.kefirkb.services.ChatChannelService;
+import com.kefirkb.services.MessageService;
 import com.kefirkb.services.UserService;
 import io.netty.channel.Channel;
 
@@ -14,12 +15,15 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
 	private final String commandName = "/join";
 	private final ChatChannelService chatChannelService;
 	private final UserService userService;
+	private final MessageService messageService;
 
 	public JoinChannelCommandProcessor(@Nonnull ChatChannelService chatChannelService,
-									   @Nonnull UserService userService)
+									   @Nonnull UserService userService,
+									   @Nonnull MessageService messageService)
 	{
 		this.chatChannelService = chatChannelService;
 		this.userService = userService;
+		this.messageService = messageService;
 	}
 
 	//TODO should do in transaction
@@ -51,15 +55,20 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
 			message = "Channel was created: " + chatChannelName;
 		} else {
 			// TODO should send broadcast messages to all joined users
-			message = user.getUserName() + " joined to " + chatChannelName;
+			message = "";
 		}
 
-		// TODO is it need service layer for join/unjoin user
-		leftUserCurrentChannel(user, chatChannel);
+		// TODO is it need service layer for join/left user
+		ChatChannel leftChannel = leftUserCurrentChannel(user);
 
 		joinUserToChatChannel(user, chatChannel);
 
 		persistChanges(user, chatChannel);
+
+		if(leftChannel != null) {
+			messageService.sendMessage(user.getUserName(), "left " + leftChannel.getChatChannelName(), leftChannel);
+		}
+		messageService.sendMessage(user.getUserName(), "joined to " + chatChannelName, chatChannel);
 
 		return message;
 	}
@@ -74,12 +83,14 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
 		user.joinToChannel(chatChannel);
 	}
 
-	private void leftUserCurrentChannel(User user, ChatChannel chatChannel) {
+	private ChatChannel leftUserCurrentChannel(User user) {
 		if(user.getJoinedChatChannel() != null) {
 			ChatChannel userChatChannel = Objects.requireNonNull(chatChannelService.chatChannelByName(user.getJoinedChatChannel().getChatChannelName()));
 			userChatChannel.leftUser(user);
-			chatChannelService.saveChatChannel(chatChannel);
+			user.joinToChannel(null);
+			return chatChannelService.saveChatChannel(userChatChannel);
 		}
+		return null;
 	}
 
 	@Nonnull

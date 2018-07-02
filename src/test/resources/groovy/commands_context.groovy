@@ -5,7 +5,7 @@ import com.kefirkb.services.CommandsDispatcher
 
 beans {
 	logonCommandProcessor(LogonProcessor, ref('authService'))
-	joinChannelCommandProcessor(JoinChannelCommandProcessor, ref('chatChannelService'), ref('userService'))
+	joinChannelCommandProcessor(JoinChannelCommandProcessor, ref('chatChannelService'), ref('userService'), ref('messageService'))
 	leftChannelCommandProcessor(LeftChannelCommandProcessor, ref('chatChannelService'), ref('userService'))
 
 	commandProcessors(HashSet, Arrays.asList(ref('logonCommandProcessor'), ref('joinChannelCommandProcessor'), ref('leftChannelCommandProcessor')))

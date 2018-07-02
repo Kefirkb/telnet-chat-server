@@ -34,6 +34,10 @@ public class ChatChannel {
 		joinedUsers.remove(user);
 	}
 
+	public User getOwner() {
+		return owner;
+	}
+
 	@Nonnull
 	public List<User> getUsers() {
 		return Collections.unmodifiableList(joinedUsers);

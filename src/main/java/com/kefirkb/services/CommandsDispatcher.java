@@ -50,7 +50,9 @@ public class CommandsDispatcher {
 
 		try {
 			String result = commandProcessor.process(Arrays.copyOfRange(commandNameWithParams, 1, commandNameWithParams.length), channel);
-			sendFromServer(result, channel);
+			if(!result.isEmpty()) {
+				sendFromServer(result, channel);
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 			sendFromServer("Internal error", channel);
