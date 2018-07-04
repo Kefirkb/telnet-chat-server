@@ -1,5 +1,6 @@
 package com.kefirkb.services.impl;
 
+import com.kefirkb.exceptions.AuthException;
 import com.kefirkb.model.User;
 import com.kefirkb.services.AuthService;
 import io.netty.channel.Channel;
@@ -31,12 +32,12 @@ public class DummyAuthService implements AuthService {
 	private static final Set<String> LOGGED_CHANNELS = ConcurrentHashMap.newKeySet();
 
 	@Override
-	public boolean tryLogon(@Nonnull String userName, @Nonnull String password, @Nonnull Channel channel) throws Exception {
+	public boolean tryLogon(@Nonnull String userName, @Nonnull String password, @Nonnull Channel channel) throws AuthException {
 		Objects.requireNonNull(userName);
 		ChannelId channelId = channel.id();
 
 		if (isLogged(channelId)) {
-			throw new Exception("You already logged!");
+			throw new AuthException("You already logged!");
 		}
 
 		boolean logged = password.equals(PERSISTED_USERS_REGISTRY.get(userName));
