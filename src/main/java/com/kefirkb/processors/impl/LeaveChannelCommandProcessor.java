@@ -8,15 +8,18 @@ import com.kefirkb.services.ChatChannelService;
 import com.kefirkb.services.MessageService;
 import com.kefirkb.services.UserService;
 import io.netty.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
+import java.util.Arrays;
 
 import static com.kefirkb.registries.ServerMessagesRegistry.LEFT_CHANNEL;
 import static com.kefirkb.registries.ServerMessagesRegistry.USER_IS_NOT_IN_ANY_CHANNEL;
 import static java.util.Objects.requireNonNull;
 
 public class LeaveChannelCommandProcessor implements CommandProcessor {
+    private static final Logger log = LoggerFactory.getLogger(LeaveChannelCommandProcessor.class);
 
     private final String commandName = "/leave";
     private final UserService userService;
@@ -33,6 +36,8 @@ public class LeaveChannelCommandProcessor implements CommandProcessor {
 
     @Override
     public void process(@Nonnull String[] args, @Nonnull Channel channel) throws CommandException {
+        log.info("Start process command " + commandName + " " + Arrays.deepToString(args));
+
         requireNonNull(args, "args");
         requireNonNull(channel, "channel");
 
@@ -40,6 +45,7 @@ public class LeaveChannelCommandProcessor implements CommandProcessor {
         ChatChannel chatChannel = user.getJoinedChatChannel();
 
         if (chatChannel == null) {
+            log.error(USER_IS_NOT_IN_ANY_CHANNEL);
             throw new CommandException(USER_IS_NOT_IN_ANY_CHANNEL);
         }
         ChatChannel leftChannel = leftUserCurrentChannel(user);
@@ -47,6 +53,7 @@ public class LeaveChannelCommandProcessor implements CommandProcessor {
 
         if (leftChannel != null)
             messageService.sendMessage(user.getUserName(), LEFT_CHANNEL + leftChannel.getChatChannelName(), leftChannel);
+        log.info("End process command " + commandName + " " + Arrays.deepToString(args));
     }
 
     private void persistChanges(User user, ChatChannel chatChannel) {

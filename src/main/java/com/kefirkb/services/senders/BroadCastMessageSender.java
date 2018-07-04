@@ -3,6 +3,8 @@ package com.kefirkb.services.senders;
 import com.kefirkb.model.BroadCastMessage;
 import com.kefirkb.model.PersonalMessage;
 import com.kefirkb.services.MessageQueuesHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -15,6 +17,8 @@ import java.util.concurrent.TimeUnit;
  * map this message to personal message and put this message into personal messages queue
  */
 public class BroadCastMessageSender implements MessageSender {
+    private static final Logger log = LoggerFactory.getLogger(BroadCastMessageSender.class);
+
     private static final int PROCESS_QUEUE_RATE_MILLIS = 100;
     private static final int INITIAL_DELAY_MILLIS = 5000;
     private static final int MAX_TIMEOUT_QUEUE_WAIT_MILLIS = 500;
@@ -40,7 +44,7 @@ public class BroadCastMessageSender implements MessageSender {
         try {
             executorService.awaitTermination(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.warn("Interrupted broadcast sender ",e);
         }
     }
 
@@ -59,8 +63,9 @@ public class BroadCastMessageSender implements MessageSender {
                                     }
                             );
                         }
-                    } catch (Throwable e) {
-                        e.printStackTrace();
+                    } catch (InterruptedException e) {
+                        Thread.currentThread().interrupt();
+                        log.warn("Interrupted personal sender", e);
                     }
                 }
         );

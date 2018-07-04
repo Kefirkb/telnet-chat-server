@@ -2,6 +2,8 @@ package com.kefirkb.services.senders;
 
 import com.kefirkb.model.PersonalMessage;
 import com.kefirkb.services.MessageQueuesHolder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Executors;
 import java.util.concurrent.RejectedExecutionException;
@@ -14,6 +16,8 @@ import java.util.concurrent.TimeUnit;
  * @implNote this sender gets messages from personal queue messages and write this message into netty channel of target user
  */
 public class PersonalMessageSender implements MessageSender {
+    private static final Logger log = LoggerFactory.getLogger(PersonalMessageSender.class);
+
     private static final int PROCESS_QUEUE_RATE_MILLIS = 100;
     private static final int INITIAL_DELAY_MILLIS = 5000;
     private static final int MAX_TIMEOUT_QUEUE_WAIT_MILLIS = 1000;
@@ -39,7 +43,7 @@ public class PersonalMessageSender implements MessageSender {
         try {
             executorService.awaitTermination(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            log.warn("Interrupted personal sender", e);
         }
     }
 
@@ -55,9 +59,9 @@ public class PersonalMessageSender implements MessageSender {
             }
         } catch (InterruptedException e) {
             Thread.currentThread().interrupt();
-            e.printStackTrace();
+            log.warn("Interrupted personal sender", e);
         } catch (RejectedExecutionException e) {
-            e.printStackTrace();
+            log.error("Error: ", e);
         }
     }
 }

@@ -9,14 +9,19 @@ import com.kefirkb.services.ChatChannelService;
 import com.kefirkb.services.MessageService;
 import com.kefirkb.services.UserService;
 import io.netty.channel.Channel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.annotation.Nonnull;
+import java.util.Arrays;
 import java.util.Objects;
 
 import static com.kefirkb.registries.ServerMessagesRegistry.*;
 import static java.util.Objects.requireNonNull;
 
 public class JoinChannelCommandProcessor implements CommandProcessor {
+    private static final Logger log = LoggerFactory.getLogger(JoinChannelCommandProcessor .class);
+
     private final String commandName = "/join";
     private final ChatChannelService chatChannelService;
     private final UserService userService;
@@ -33,22 +38,27 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
     //TODO should do in transaction
     @Override
     public void process(@Nonnull String[] args, @Nonnull Channel channel) throws CommandException {
+        log.info("Start process command " + commandName + " " + Arrays.deepToString(args));
         Objects.requireNonNull(args, "args");
         Objects.requireNonNull(channel, "channel");
 
         if (args.length != 1) {
+            log.error(BAD_PARAMETERS);
             throw new CommandException(BAD_PARAMETERS);
         }
         String chatChannelName = args[0];
 
         if (chatChannelName == null) {
+            log.error(INVALID_CHANNEL_NAME);
             throw new CommandException(INVALID_CHANNEL_NAME);
         }
 
         User user = requireNonNull(userService.userByChannelId(channel.id()));
 
         if (user.getJoinedChatChannel() != null && chatChannelName.equals(user.getJoinedChatChannel().getChatChannelName())) {
-            throw new CommandException(user.getUserName() + " is already in " + chatChannelName);
+            String errorMessage = user.getUserName() + " is already in " + chatChannelName;
+            log.error(errorMessage);
+            throw new CommandException(errorMessage);
         }
 
         ChatChannel chatChannel = chatChannelService.chatChannelByName(chatChannelName);
@@ -69,6 +79,7 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
             messageService.sendMessage(user.getUserName(), LEFT_CHANNEL + leftChannel.getChatChannelName(), leftChannel);
         }
         messageService.sendMessage(user.getUserName(), JOINED_TO + chatChannelName, chatChannel);
+        log.info("End process command " + commandName + " " + Arrays.deepToString(args));
     }
 
     private void persistChanges(User user, ChatChannel chatChannel) {

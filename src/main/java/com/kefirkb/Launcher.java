@@ -3,6 +3,8 @@ package com.kefirkb;
 import com.kefirkb.services.MessageQueuesHolder;
 import com.kefirkb.services.senders.BroadCastMessageSender;
 import com.kefirkb.services.senders.PersonalMessageSender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericGroovyApplicationContext;
 
@@ -11,12 +13,14 @@ import java.util.Objects;
 import static com.kefirkb.registries.CommonRegistry.SERVER_NAME_PROPERTY;
 
 public class Launcher {
+    private static final Logger log = LoggerFactory.getLogger(Launcher.class);
 
     private static volatile TelnetServerInstance telnetServer;
     private static volatile PersonalMessageSender personalMessageSender;
     private static volatile BroadCastMessageSender broadCastMessageSender;
 
     public static void main(String[] args) throws Exception {
+        log.info("Start application");
         validateSystemProperties();
         ApplicationContext context = new GenericGroovyApplicationContext("groovy/context.groovy");
         telnetServer = context.getBean(TelnetServerInstance.class);
@@ -35,9 +39,11 @@ public class Launcher {
     }
 
     public static void stop() {
+        log.info("Stopping application...");
         MessageQueuesHolder.clearQueues();
         telnetServer.stop();
         personalMessageSender.stop();
         broadCastMessageSender.stop();
+        log.info("Application is stopped");
     }
 }
