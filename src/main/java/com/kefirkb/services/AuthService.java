@@ -1,5 +1,6 @@
 package com.kefirkb.services;
 
+import com.kefirkb.exceptions.AuthException;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelId;
 
@@ -20,7 +21,7 @@ public interface AuthService {
 	 *
 	 * @throws Exception if currently logged
 	 */
-	boolean tryLogon(@Nonnull String userName, @Nonnull String password, @Nonnull Channel channel) throws Exception;
+	boolean tryLogon(@Nonnull String userName, @Nonnull String password, @Nonnull Channel channel) throws AuthException;
 
 	/**
 	 * Method checks that user by channelId is logged

@@ -59,13 +59,9 @@ public class CommandsDispatcher {
         }
 
         try {
-            String result = commandProcessor.process(Arrays.copyOfRange(commandNameWithParams, 1, commandNameWithParams.length), channel);
-            if (!result.isEmpty()) {
-                sendFromServer(result, channel);
-            }
+            commandProcessor.process(Arrays.copyOfRange(commandNameWithParams, 1, commandNameWithParams.length), channel);
         } catch (Exception e) {
-            e.printStackTrace();
-            sendFromServer("Internal error", channel);
+            sendFromServer(e.getMessage(), channel);
         }
     }
 

@@ -1,5 +1,7 @@
 package com.kefirkb.processors.impl;
 
+import com.kefirkb.TelnetRequestHandler;
+import com.kefirkb.exceptions.CommandException;
 import com.kefirkb.model.ChatChannel;
 import com.kefirkb.model.User;
 import com.kefirkb.processors.CommandProcessor;
@@ -11,6 +13,8 @@ import io.netty.channel.Channel;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
+import static java.util.Objects.requireNonNull;
+
 public class JoinChannelCommandProcessor implements CommandProcessor {
     private final String commandName = "/join";
     private final ChatChannelService chatChannelService;
@@ -20,40 +24,37 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
     public JoinChannelCommandProcessor(@Nonnull ChatChannelService chatChannelService,
                                        @Nonnull UserService userService,
                                        @Nonnull MessageService messageService) {
-        this.chatChannelService = chatChannelService;
-        this.userService = userService;
-        this.messageService = messageService;
+        this.chatChannelService = requireNonNull(chatChannelService, "chatChannelService");
+        this.userService = requireNonNull(userService, "userService");
+        this.messageService = requireNonNull(messageService, "messageService");
     }
 
     //TODO should do in transaction
-    //TODO Create transaction guard or use Spring transactional
-    @Nonnull
     @Override
-    public String process(@Nonnull String[] args, @Nonnull Channel channel) throws Exception {
+    public void process(@Nonnull String[] args, @Nonnull Channel channel) throws CommandException {
+        Objects.requireNonNull(args, "args");
+        Objects.requireNonNull(channel, "channel");
 
         if (args.length != 1) {
-            return "You have bad parameters.";
+            throw new CommandException("You have bad parameters.");
         }
         String chatChannelName = args[0];
 
         if (chatChannelName == null) {
-            return "Channel name should be specified";
+            throw new CommandException("Channel name should be specified");
         }
 
-        User user = Objects.requireNonNull(userService.userByChannelId(channel.id()));
+        User user = requireNonNull(userService.userByChannelId(channel.id()));
 
         if (user.getJoinedChatChannel() != null && chatChannelName.equals(user.getJoinedChatChannel().getChatChannelName())) {
-            return user.getUserName() + " is already in " + chatChannelName;
+            throw new CommandException(user.getUserName() + " is already in " + chatChannelName);
         }
 
         ChatChannel chatChannel = chatChannelService.chatChannelByName(chatChannelName);
-        String message;
 
         if (chatChannel == null) {
             chatChannel = new ChatChannel(chatChannelName, user);
-            message = "Channel was created: " + chatChannelName;
-        } else {
-            message = "";
+            messageService.sendMessage(TelnetRequestHandler.SERVER_NAME, "Channel was created: " + chatChannelName, user.getChannel());
         }
 
         // TODO need service layer for join/left user to channel
@@ -67,8 +68,6 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
             messageService.sendMessage(user.getUserName(), "left " + leftChannel.getChatChannelName(), leftChannel);
         }
         messageService.sendMessage(user.getUserName(), "joined to " + chatChannelName, chatChannel);
-
-        return message;
     }
 
     private void persistChanges(User user, ChatChannel chatChannel) {
@@ -78,7 +77,7 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
 
     private ChatChannel leftUserCurrentChannel(User user) {
         if (user.getJoinedChatChannel() != null) {
-            ChatChannel userChatChannel = Objects.requireNonNull(chatChannelService.chatChannelByName(user.getJoinedChatChannel().getChatChannelName()));
+            ChatChannel userChatChannel = requireNonNull(chatChannelService.chatChannelByName(user.getJoinedChatChannel().getChatChannelName()));
             userChatChannel.leaveUser(user);
             user.joinToChannel(null);
             return chatChannelService.saveChatChannel(userChatChannel);
