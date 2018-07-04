@@ -5,8 +5,17 @@ apply plugin: 'java'
 apply plugin: 'application'
 
 test {
-	apply plugin: 'groovy'
-	apply plugin: 'java'
+    apply plugin: 'groovy'
+    apply plugin: 'java'
+    systemProperties = [
+            "server.name": "TEST_SERVER",
+    ]
+}
+
+run {
+    systemProperties = [
+            "server.name": "SERVER",
+    ]
 }
 
 sourceCompatibility = 1.8
@@ -14,37 +23,37 @@ sourceCompatibility = 1.8
 mainClassName = 'com.kefirkb.Launcher'
 
 sourceSets {
-	main {
-		java {
-			srcDirs = ['src/main/java']
-		}
-	}
-	test {
-		java {
-			srcDirs = ['src/test/java']
-		}
-		groovy {
-			srcDirs = ['src/test/groovy']
-		}
-	}
+    main {
+        java {
+            srcDirs = ['src/main/java']
+        }
+    }
+    test {
+        java {
+            srcDirs = ['src/test/java']
+        }
+        groovy {
+            srcDirs = ['src/test/groovy']
+        }
+    }
 }
 
 repositories {
-	jcenter()
-	mavenCentral()
+    jcenter()
+    mavenCentral()
 }
 
 dependencies {
-	compile group: 'io.netty', name: 'netty-all', version: '4.1.25.Final'
-	compile group: 'org.springframework', name: 'spring-core', version: '5.0.7.RELEASE'
-	compile group: 'org.springframework', name: 'spring-context', version: '5.0.7.RELEASE'
-	compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
-	compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
-	compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
+    compile group: 'io.netty', name: 'netty-all', version: '4.1.25.Final'
+    compile group: 'org.springframework', name: 'spring-core', version: '5.0.7.RELEASE'
+    compile group: 'org.springframework', name: 'spring-context', version: '5.0.7.RELEASE'
+    compile group: 'javax.validation', name: 'validation-api', version: '2.0.1.Final'
+    compile group: 'com.google.code.findbugs', name: 'jsr305', version: '3.0.2'
+    compile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
 
-	testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
-	testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
-	testCompile group: 'commons-net', name: 'commons-net', version: '3.6'
-	testCompile group: 'junit', name: 'junit', version: '4.12'
+    testCompile group: 'org.codehaus.groovy', name: 'groovy-all', version: '2.4.10'
+    testCompile group: 'org.spockframework', name: 'spock-core', version: '1.1-groovy-2.4'
+    testCompile group: 'commons-net', name: 'commons-net', version: '3.6'
+    testCompile group: 'junit', name: 'junit', version: '4.12'
 
 }

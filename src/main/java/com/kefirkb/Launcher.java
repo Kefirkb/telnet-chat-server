@@ -6,29 +6,38 @@ import com.kefirkb.services.senders.PersonalMessageSender;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.support.GenericGroovyApplicationContext;
 
+import java.util.Objects;
+
+import static com.kefirkb.registries.CommonRegistry.SERVER_NAME_PROPERTY;
+
 public class Launcher {
 
-	private static volatile TelnetServerInstance telnetServer;
-	private static volatile PersonalMessageSender personalMessageSender;
-	private static volatile BroadCastMessageSender broadCastMessageSender;
+    private static volatile TelnetServerInstance telnetServer;
+    private static volatile PersonalMessageSender personalMessageSender;
+    private static volatile BroadCastMessageSender broadCastMessageSender;
 
-	public static void main(String[] args) throws Exception {
-		ApplicationContext context = new GenericGroovyApplicationContext("groovy/context.groovy");
-		telnetServer = context.getBean(TelnetServerInstance.class);
-		personalMessageSender = context.getBean(PersonalMessageSender.class);
-		broadCastMessageSender = context.getBean(BroadCastMessageSender.class);
+    public static void main(String[] args) throws Exception {
+        validateSystemProperties();
+        ApplicationContext context = new GenericGroovyApplicationContext("groovy/context.groovy");
+        telnetServer = context.getBean(TelnetServerInstance.class);
+        personalMessageSender = context.getBean(PersonalMessageSender.class);
+        broadCastMessageSender = context.getBean(BroadCastMessageSender.class);
 
-		personalMessageSender.start();
-		broadCastMessageSender.start();
-		telnetServer.start();
+        personalMessageSender.start();
+        broadCastMessageSender.start();
+        telnetServer.start();
 
-		Runtime.getRuntime().addShutdownHook(new Thread(Launcher::stop));
-	}
+        Runtime.getRuntime().addShutdownHook(new Thread(Launcher::stop));
+    }
 
-	public static void stop() {
-		personalMessageSender.stop();
-		broadCastMessageSender.stop();
-		MessageQueuesHolder.clearQueues();
-		telnetServer.stop();
-	}
+    private static void validateSystemProperties() {
+        Objects.requireNonNull(System.getProperty(SERVER_NAME_PROPERTY), SERVER_NAME_PROPERTY + " must be specified");
+    }
+
+    public static void stop() {
+        MessageQueuesHolder.clearQueues();
+        telnetServer.stop();
+        personalMessageSender.stop();
+        broadCastMessageSender.stop();
+    }
 }

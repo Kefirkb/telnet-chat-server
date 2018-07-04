@@ -1,7 +1,7 @@
 package com.kefirkb.services;
 
-import com.kefirkb.TelnetRequestHandler;
 import com.kefirkb.processors.CommandProcessor;
+import com.kefirkb.registries.CommonRegistry;
 import io.netty.channel.Channel;
 
 import java.util.Arrays;
@@ -66,6 +66,6 @@ public class CommandsDispatcher {
     }
 
     private void sendFromServer(String messageText, Channel channel) {
-        messageService.sendMessage(TelnetRequestHandler.SERVER_NAME, messageText, channel);
+        messageService.sendMessage(System.getProperty(CommonRegistry.SERVER_NAME_PROPERTY), messageText, channel);
     }
 }

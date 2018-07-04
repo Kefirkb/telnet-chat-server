@@ -1,10 +1,10 @@
 package com.kefirkb.processors.impl;
 
-import com.kefirkb.TelnetRequestHandler;
 import com.kefirkb.exceptions.CommandException;
 import com.kefirkb.model.ChatChannel;
 import com.kefirkb.model.User;
 import com.kefirkb.processors.CommandProcessor;
+import com.kefirkb.registries.CommonRegistry;
 import com.kefirkb.services.ChatChannelService;
 import com.kefirkb.services.MessageService;
 import com.kefirkb.services.UserService;
@@ -55,7 +55,7 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
 
         if (chatChannel == null) {
             chatChannel = new ChatChannel(chatChannelName, user);
-            messageService.sendMessage(TelnetRequestHandler.SERVER_NAME, CHANNEL_WAS_CREATED + chatChannelName, user.getChannel());
+            messageService.sendMessage(System.getProperty(CommonRegistry.SERVER_NAME_PROPERTY), CHANNEL_WAS_CREATED + chatChannelName, user.getChannel());
         }
 
         // TODO need service layer for join/left user to channel

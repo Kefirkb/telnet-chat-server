@@ -1,17 +1,15 @@
 package com.kefirkb.processors.impl;
 
-import com.kefirkb.TelnetRequestHandler;
 import com.kefirkb.exceptions.CommandException;
 import com.kefirkb.model.ChatChannel;
 import com.kefirkb.model.User;
 import com.kefirkb.processors.CommandProcessor;
-import com.kefirkb.services.ChatChannelService;
+import com.kefirkb.registries.CommonRegistry;
 import com.kefirkb.services.MessageService;
 import com.kefirkb.services.UserService;
 import io.netty.channel.Channel;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.kefirkb.registries.ServerMessagesRegistry.USER_IS_NOT_IN_ANY_CHANNEL;
@@ -41,7 +39,7 @@ public class UserListCommandProcessor implements CommandProcessor {
             throw new CommandException(USER_IS_NOT_IN_ANY_CHANNEL);
         }
         String userList = chatChannel.getUsers().stream().map(User::getUserName).collect(Collectors.joining(", "));
-        messageService.sendMessage(TelnetRequestHandler.SERVER_NAME,
+        messageService.sendMessage(System.getProperty(CommonRegistry.SERVER_NAME_PROPERTY),
                 userList,
                 channel);
     }

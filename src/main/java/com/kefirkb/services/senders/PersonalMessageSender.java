@@ -14,21 +14,28 @@ import java.util.concurrent.TimeUnit;
  * @implNote this sender gets messages from personal queue messages and write this message into netty channel of target user
  */
 public class PersonalMessageSender implements MessageSender {
+    private static final int PROCESS_QUEUE_RATE_MILLIS = 100;
+    private static final int INITIAL_DELAY_MILLIS = 5000;
+    private static final int MAX_TIMEOUT_QUEUE_WAIT_MILLIS = 1000;
 
     private final ScheduledExecutorService executorService;
 
     public PersonalMessageSender(int corePoolSize) {
-        executorService = Executors.newScheduledThreadPool(corePoolSize);
+        executorService = Executors.newScheduledThreadPool(corePoolSize, task -> {
+            Thread thread = Executors.defaultThreadFactory().newThread(task);
+            thread.setDaemon(true);
+            return thread;
+        });
     }
 
     @Override
     public void start() {
-        executorService.scheduleAtFixedRate(PersonalMessageSender::deliverMessage, 5000, 100, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(PersonalMessageSender::deliverMessage, INITIAL_DELAY_MILLIS, PROCESS_QUEUE_RATE_MILLIS, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void stop() {
-        executorService.shutdown();
+        executorService.shutdownNow();
         try {
             executorService.awaitTermination(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -37,12 +44,13 @@ public class PersonalMessageSender implements MessageSender {
     }
 
     private static void deliverMessage() {
-        PersonalMessage personalMessage = null;
+        PersonalMessage personalMessage;
         try {
             if (!Thread.currentThread().isInterrupted()) {
-                personalMessage = MessageQueuesHolder.getNextPersonalMessage(1, TimeUnit.SECONDS);
-                if (personalMessage != null && personalMessage.getChannelReceiver().isActive()) {
-                    personalMessage.getChannelReceiver().writeAndFlush(personalMessage.getSenderName() + ':' + ' ' + personalMessage.getMessageText() + "\r\n");
+                personalMessage = MessageQueuesHolder.getNextPersonalMessage(MAX_TIMEOUT_QUEUE_WAIT_MILLIS, TimeUnit.MILLISECONDS);
+                if (personalMessage != null && personalMessage.getChannelReceiver().isRegistered()) {
+                    personalMessage.getChannelReceiver()
+                            .writeAndFlush(personalMessage.getSenderName() + ':' + ' ' + personalMessage.getMessageText() + "\r\n");
                 }
             }
         } catch (InterruptedException e) {

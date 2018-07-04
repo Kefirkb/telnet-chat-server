@@ -15,20 +15,28 @@ import java.util.concurrent.TimeUnit;
  * map this message to personal message and put this message into personal messages queue
  */
 public class BroadCastMessageSender implements MessageSender {
+    private static final int PROCESS_QUEUE_RATE_MILLIS = 100;
+    private static final int INITIAL_DELAY_MILLIS = 5000;
+    private static final int MAX_TIMEOUT_QUEUE_WAIT_MILLIS = 500;
+
     private final ScheduledExecutorService executorService;
 
     public BroadCastMessageSender(int corePoolSize) {
-        executorService = Executors.newScheduledThreadPool(corePoolSize);
+        executorService = Executors.newScheduledThreadPool(corePoolSize, task -> {
+            Thread thread = Executors.defaultThreadFactory().newThread(task);
+            thread.setDaemon(true);
+            return thread;
+        });
     }
 
     @Override
     public void start() {
-        executorService.scheduleAtFixedRate(BroadCastMessageSender::deliverMessage, 5000, 100, TimeUnit.MILLISECONDS);
+        executorService.scheduleAtFixedRate(BroadCastMessageSender::deliverMessage, INITIAL_DELAY_MILLIS, PROCESS_QUEUE_RATE_MILLIS, TimeUnit.MILLISECONDS);
     }
 
     @Override
     public void stop() {
-        executorService.shutdown();
+        executorService.shutdownNow();
         try {
             executorService.awaitTermination(10, TimeUnit.SECONDS);
         } catch (InterruptedException e) {
@@ -40,7 +48,7 @@ public class BroadCastMessageSender implements MessageSender {
         MessageQueuesHolder.availableChatChannels().forEach(
                 chatChannelName -> {
                     try {
-                        BroadCastMessage broadCastMessage = MessageQueuesHolder.getNextChatChannelMessage(chatChannelName, 500, TimeUnit.MILLISECONDS);
+                        BroadCastMessage broadCastMessage = MessageQueuesHolder.getNextChatChannelMessage(chatChannelName, MAX_TIMEOUT_QUEUE_WAIT_MILLIS, TimeUnit.MILLISECONDS);
                         if (broadCastMessage != null) {
                             broadCastMessage.getChannelAddress().getUsers().forEach(
                                     user -> {
@@ -52,7 +60,6 @@ public class BroadCastMessageSender implements MessageSender {
                             );
                         }
                     } catch (Throwable e) {
-                        System.out.println(e);
                         e.printStackTrace();
                     }
                 }
