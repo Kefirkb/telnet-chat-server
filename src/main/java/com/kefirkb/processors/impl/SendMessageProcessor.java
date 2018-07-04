@@ -13,6 +13,7 @@ import io.netty.channel.Channel;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
+import static com.kefirkb.registries.ServerMessagesRegistry.USER_IS_NOT_IN_ANY_CHANNEL;
 import static java.util.Objects.requireNonNull;
 
 public class SendMessageProcessor implements CommandProcessor {
@@ -37,7 +38,7 @@ public class SendMessageProcessor implements CommandProcessor {
 		String message = args[0];
 
 		if(chatChannel == null) {
-			throw new CommandException("You are not in any channel!");
+			throw new CommandException(USER_IS_NOT_IN_ANY_CHANNEL);
 		}
         chatChannel.pushLastMessage(new BroadCastMessage(user.getUserName(), message, chatChannel));
 		messageService.sendMessage(user.getUserName(), message, chatChannel);

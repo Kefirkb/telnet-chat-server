@@ -14,6 +14,7 @@ import javax.annotation.Nonnull;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
+import static com.kefirkb.registries.ServerMessagesRegistry.USER_IS_NOT_IN_ANY_CHANNEL;
 import static java.util.Objects.requireNonNull;
 
 public class UserListCommandProcessor implements CommandProcessor {
@@ -37,7 +38,7 @@ public class UserListCommandProcessor implements CommandProcessor {
         ChatChannel chatChannel = user.getJoinedChatChannel();
 
         if (chatChannel == null) {
-            throw new CommandException("You are not in any channel!");
+            throw new CommandException(USER_IS_NOT_IN_ANY_CHANNEL);
         }
         String userList = chatChannel.getUsers().stream().map(User::getUserName).collect(Collectors.joining(", "));
         messageService.sendMessage(TelnetRequestHandler.SERVER_NAME,
