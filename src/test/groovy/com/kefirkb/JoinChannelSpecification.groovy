@@ -1,25 +1,8 @@
 package com.kefirkb
 
 import org.apache.commons.net.telnet.TelnetClient
-import spock.lang.Specification
 
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-
-class JoinChannelSpecification extends Specification {
-
-	def setup() {
-		ExecutorService executorService = Executors.newSingleThreadExecutor()
-		executorService.execute({
-			Launcher.main(new String[0])
-		})
-		Thread.sleep(4000)
-	}
-
-	def cleanup() {
-		Launcher.stop()
-		Thread.sleep(2000)
-	}
+class JoinChannelSpecification extends CommonSpecification {
 
 	def "Test join to channel "() {
 		setup:
@@ -36,15 +19,15 @@ class JoinChannelSpecification extends Specification {
 		BufferedReader reader3 = new BufferedReader(new InputStreamReader(telnetClient3.inputStream))
 
 		expect:
-		reader1.readLine() == "Welcome to DUMMY_SERVER!"
-		reader2.readLine() == "Welcome to DUMMY_SERVER!"
-		reader3.readLine() == "Welcome to DUMMY_SERVER!"
+		reader1.readLine() == "Welcome to TEST_SERVER!"
+		reader2.readLine() == "Welcome to TEST_SERVER!"
+		reader3.readLine() == "Welcome to TEST_SERVER!"
 
 		when:
 		sendMessage(telnetClient1, "/join channelSome")
 
 		then:
-		reader1.readLine() == "DUMMY_SERVER: You should be authorized!"
+		reader1.readLine() == "TEST_SERVER: You should be authorized!"
 
 		when:
         sendMessage(telnetClient1, "/logon user1 user1")
@@ -52,14 +35,14 @@ class JoinChannelSpecification extends Specification {
         sendMessage(telnetClient1, "/join channelSome" )
 
 		then:
-		reader1.readLine() == "DUMMY_SERVER: Channel was created: channelSome"
+		reader1.readLine() == "TEST_SERVER: Channel was created: channelSome"
 		reader1.readLine() == "user1: joined to channelSome"
 
 		when:
         sendMessage(telnetClient1, "/join channelSome")
 
 		then:
-		reader1.readLine() == "DUMMY_SERVER: user1 is already in channelSome"
+		reader1.readLine() == "TEST_SERVER: user1 is already in channelSome"
 
 		when:
         sendMessage(telnetClient2, "/logon user2 user2")
@@ -86,12 +69,6 @@ class JoinChannelSpecification extends Specification {
 		then:
 		reader2.readLine() == "user1: left channelSome"
 		reader3.readLine() == "user1: left channelSome"
-
-	}
-
-	static void sendMessage(TelnetClient client, String message) {
-		client.getOutputStream().write((message + System.lineSeparator()).getBytes())
-		client.getOutputStream().flush()
 	}
 
 }

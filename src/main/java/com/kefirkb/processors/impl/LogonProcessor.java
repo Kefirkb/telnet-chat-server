@@ -1,19 +1,16 @@
 package com.kefirkb.processors.impl;
 
-import com.kefirkb.TelnetRequestHandler;
 import com.kefirkb.exceptions.AuthException;
 import com.kefirkb.exceptions.CommandException;
-import com.kefirkb.model.User;
 import com.kefirkb.processors.CommandProcessor;
+import com.kefirkb.registries.CommonRegistry;
 import com.kefirkb.services.AuthService;
-import com.kefirkb.services.ChatChannelService;
 import com.kefirkb.services.MessageService;
-import com.kefirkb.services.UserService;
 import io.netty.channel.Channel;
 
 import javax.annotation.Nonnull;
-import java.util.Objects;
 
+import static com.kefirkb.registries.ServerMessagesRegistry.*;
 import static java.util.Objects.requireNonNull;
 
 public class LogonProcessor implements CommandProcessor {
@@ -32,10 +29,10 @@ public class LogonProcessor implements CommandProcessor {
         requireNonNull(channel, "channel");
 
         if (authService.isLogged(channel.id())) {
-            throw new CommandException("You are already logged.");
+            throw new CommandException(ALREADY_LOGGED);
         }
         if (args.length != 2) {
-            throw new CommandException("You have bad parameters.");
+            throw new CommandException(BAD_PARAMETERS);
         }
         boolean logged;
         try {
@@ -45,11 +42,11 @@ public class LogonProcessor implements CommandProcessor {
         }
 
         if (logged) {
-            this.messageService.sendMessage(TelnetRequestHandler.SERVER_NAME, "Logged successfully!", channel);
+            this.messageService.sendMessage(System.getProperty(CommonRegistry.SERVER_NAME_PROPERTY), LOGGED_SUCCESSFULLY, channel);
             return;
         }
 
-        throw new CommandException("Invalid password or username");
+        throw new CommandException(INVALID_CREDENTIALS);
     }
 
     @Nonnull

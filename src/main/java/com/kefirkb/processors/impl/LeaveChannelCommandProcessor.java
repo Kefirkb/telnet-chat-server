@@ -12,6 +12,8 @@ import io.netty.channel.Channel;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
+import static com.kefirkb.registries.ServerMessagesRegistry.LEFT_CHANNEL;
+import static com.kefirkb.registries.ServerMessagesRegistry.USER_IS_NOT_IN_ANY_CHANNEL;
 import static java.util.Objects.requireNonNull;
 
 public class LeaveChannelCommandProcessor implements CommandProcessor {
@@ -38,11 +40,13 @@ public class LeaveChannelCommandProcessor implements CommandProcessor {
         ChatChannel chatChannel = user.getJoinedChatChannel();
 
         if (chatChannel == null) {
-            throw new CommandException("You are not in any channel!");
+            throw new CommandException(USER_IS_NOT_IN_ANY_CHANNEL);
         }
         ChatChannel leftChannel = leftUserCurrentChannel(user);
         persistChanges(user, leftChannel);
-        messageService.sendMessage(user.getUserName(), "left " + leftChannel.getChatChannelName(), leftChannel);
+
+        if (leftChannel != null)
+            messageService.sendMessage(user.getUserName(), LEFT_CHANNEL + leftChannel.getChatChannelName(), leftChannel);
     }
 
     private void persistChanges(User user, ChatChannel chatChannel) {

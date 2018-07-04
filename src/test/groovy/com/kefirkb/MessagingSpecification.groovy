@@ -1,25 +1,8 @@
 package com.kefirkb
 
 import org.apache.commons.net.telnet.TelnetClient
-import spock.lang.Specification
 
-import java.util.concurrent.ExecutorService
-import java.util.concurrent.Executors
-
-class MessagingSpecification extends Specification {
-
-	def setup() {
-		ExecutorService executorService = Executors.newSingleThreadExecutor()
-		executorService.execute({
-			Launcher.main(new String[0])
-		})
-		Thread.sleep(4000)
-	}
-
-	def cleanup() {
-		Launcher.stop()
-		Thread.sleep(2000)
-	}
+class MessagingSpecification extends CommonSpecification {
 
 	def "Test messaging "() {
 		setup:
@@ -48,12 +31,12 @@ class MessagingSpecification extends Specification {
 		BufferedReader reader6 = new BufferedReader(new InputStreamReader(telnetClient6.inputStream))
 
 		expect:
-		reader1.readLine() == "Welcome to DUMMY_SERVER!"
-		reader2.readLine() == "Welcome to DUMMY_SERVER!"
-		reader3.readLine() == "Welcome to DUMMY_SERVER!"
-		reader4.readLine() == "Welcome to DUMMY_SERVER!"
-		reader5.readLine() == "Welcome to DUMMY_SERVER!"
-		reader6.readLine() == "Welcome to DUMMY_SERVER!"
+		reader1.readLine() == "Welcome to TEST_SERVER!"
+		reader2.readLine() == "Welcome to TEST_SERVER!"
+		reader3.readLine() == "Welcome to TEST_SERVER!"
+		reader4.readLine() == "Welcome to TEST_SERVER!"
+		reader5.readLine() == "Welcome to TEST_SERVER!"
+		reader6.readLine() == "Welcome to TEST_SERVER!"
 
 
 		when:
@@ -105,11 +88,6 @@ class MessagingSpecification extends Specification {
         reader4.readLine() == "user6: Hello channel some 1"
         reader5.readLine() == "user6: Hello channel some 1"
         reader6.readLine() == "user6: Hello channel some 1"
-	}
-
-	static void sendMessage(TelnetClient client, String message) {
-		client.getOutputStream().write((message + System.lineSeparator()).getBytes())
-		client.getOutputStream().flush()
 	}
 
 }

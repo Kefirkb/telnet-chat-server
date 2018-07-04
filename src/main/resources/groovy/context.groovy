@@ -1,6 +1,6 @@
-import com.kefirkb.TelnetServerInstance
 import com.kefirkb.TelnetRequestHandler
 import com.kefirkb.TelnetServerInitializer
+import com.kefirkb.TelnetServerInstance
 import com.kefirkb.services.MessageServiceImpl
 import com.kefirkb.services.impl.DummyAuthService
 import com.kefirkb.services.impl.DummyChatChannelService
@@ -16,7 +16,7 @@ beans {
 
 	messageService(MessageServiceImpl) {}
 
-	telnetServerHandler(TelnetRequestHandler, ref('authService'), ref('commandsDispatcher'))
+	telnetServerHandler(TelnetRequestHandler, ref('commandsDispatcher'))
 
 	telnetServerInitializer(TelnetServerInitializer, ref('telnetServerHandler'), null)
 

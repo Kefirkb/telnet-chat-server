@@ -1,10 +1,10 @@
 package com.kefirkb.processors.impl;
 
-import com.kefirkb.TelnetRequestHandler;
 import com.kefirkb.exceptions.CommandException;
 import com.kefirkb.model.ChatChannel;
 import com.kefirkb.model.User;
 import com.kefirkb.processors.CommandProcessor;
+import com.kefirkb.registries.CommonRegistry;
 import com.kefirkb.services.ChatChannelService;
 import com.kefirkb.services.MessageService;
 import com.kefirkb.services.UserService;
@@ -13,6 +13,7 @@ import io.netty.channel.Channel;
 import javax.annotation.Nonnull;
 import java.util.Objects;
 
+import static com.kefirkb.registries.ServerMessagesRegistry.*;
 import static java.util.Objects.requireNonNull;
 
 public class JoinChannelCommandProcessor implements CommandProcessor {
@@ -36,12 +37,12 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
         Objects.requireNonNull(channel, "channel");
 
         if (args.length != 1) {
-            throw new CommandException("You have bad parameters.");
+            throw new CommandException(BAD_PARAMETERS);
         }
         String chatChannelName = args[0];
 
         if (chatChannelName == null) {
-            throw new CommandException("Channel name should be specified");
+            throw new CommandException(INVALID_CHANNEL_NAME);
         }
 
         User user = requireNonNull(userService.userByChannelId(channel.id()));
@@ -54,7 +55,7 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
 
         if (chatChannel == null) {
             chatChannel = new ChatChannel(chatChannelName, user);
-            messageService.sendMessage(TelnetRequestHandler.SERVER_NAME, "Channel was created: " + chatChannelName, user.getChannel());
+            messageService.sendMessage(System.getProperty(CommonRegistry.SERVER_NAME_PROPERTY), CHANNEL_WAS_CREATED + chatChannelName, user.getChannel());
         }
 
         // TODO need service layer for join/left user to channel
@@ -65,9 +66,9 @@ public class JoinChannelCommandProcessor implements CommandProcessor {
         persistChanges(user, chatChannel);
 
         if (leftChannel != null) {
-            messageService.sendMessage(user.getUserName(), "left " + leftChannel.getChatChannelName(), leftChannel);
+            messageService.sendMessage(user.getUserName(), LEFT_CHANNEL + leftChannel.getChatChannelName(), leftChannel);
         }
-        messageService.sendMessage(user.getUserName(), "joined to " + chatChannelName, chatChannel);
+        messageService.sendMessage(user.getUserName(), JOINED_TO + chatChannelName, chatChannel);
     }
 
     private void persistChanges(User user, ChatChannel chatChannel) {

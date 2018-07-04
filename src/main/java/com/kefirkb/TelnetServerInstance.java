@@ -52,7 +52,7 @@ public class TelnetServerInstance {
 			serverChannel = f.channel();
 
 			// Wait until the server socket is closed.
-			f.channel().closeFuture().sync();
+			serverChannel.closeFuture().sync();
 		} finally {
 			// Shut down all event loops to terminate all threads.
 			bossGroup.shutdownGracefully();
@@ -61,6 +61,7 @@ public class TelnetServerInstance {
 	}
 
 	public void stop() {
+		serverChannel.disconnect();
 		serverChannel.close();
 	}
 }
